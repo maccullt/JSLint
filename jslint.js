@@ -376,7 +376,8 @@ var JSLINT = (function () {
             vars      : true,
             white     : true,
             widget    : true,
-            windows   : true
+            windows   : true,
+            rs_for_var : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -4314,7 +4315,7 @@ klass:              do {
     });
 
     labeled_stmt('for', function () {
-
+		debugger;
         var blok, filter, ok = false, paren = next_token, value;
         this.arity = 'statement';
         funct['(breakage)'] += 1;
@@ -4332,8 +4333,14 @@ klass:              do {
             step_in('control');
             spaces(this, paren);
             no_space();
-            if (next_token.id === 'var') {
-                stop('move_var');
+            if (next_token.id === 'var' ) {
+            	if (! option.rs_for_var) {
+                	stop('move_var');
+            	} else {
+            		advance('var');
+            		add_label(next_token, 'var');
+            	}
+            	
             }
             edge();
             if (peek(0).id === 'in') {
