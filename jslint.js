@@ -377,7 +377,10 @@ var JSLINT = (function () {
             white     : true,
             widget    : true,
             windows   : true,
-            rs_for_var : true
+            rs_for_var : true,
+            rs_use_or : true,
+            rs_mixed : true,
+            rs_already_defined: true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -1219,7 +1222,7 @@ var JSLINT = (function () {
             source_row = lines[line];
             line += 1;
             at = source_row.search(/ \t/);
-            if (at >= 0) {
+            if (at >= 0 && !option.rs_mixed ) {
                 warn_at('mixed', line, at + 1);
             }
             source_row = source_row.replace(/\t/g, tab);
@@ -1965,7 +1968,8 @@ klass:              do {
                     }
                     kind = 'var';
                 } else {
-                    warn('already_defined', token, name);
+                    if ( ! option.rs_already_defined ) 
+                    	warn('already_defined', token, name);
                 }
             } else {
 
@@ -3243,7 +3247,7 @@ klass:              do {
         that.arity = 'ternary';
         if (are_similar(that.second, that.third)) {
             warn('weird_ternary', colon);
-        } else if (are_similar(that.first, that.second)) {
+        } else if (are_similar(that.first, that.second) && ! option.rs_use_or ) {
             warn('use_or', that);
         }
         step_out();
@@ -4340,7 +4344,6 @@ klass:              do {
             		advance('var');
             		add_label(next_token, 'var');
             	}
-            	
             }
             edge();
             if (peek(0).id === 'in') {
