@@ -380,7 +380,8 @@ var JSLINT = (function () {
             rs_for_var : true,
             rs_use_or : true,
             rs_mixed : true,
-            rs_already_defined: true
+            rs_already_defined: true,
+            rs_statement_block : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -1968,8 +1969,9 @@ klass:              do {
                     }
                     kind = 'var';
                 } else {
-                    if ( ! option.rs_already_defined ) 
+                    if ( ! option.rs_already_defined ) {
                     	warn('already_defined', token, name);
+                    }
                 }
             } else {
 
@@ -3963,7 +3965,9 @@ klass:              do {
     });
 
     stmt('{', function () {
-        warn('statement_block');
+        if ( ! option.rs_statement_block ) {
+        	warn('statement_block');
+        }
         this.arity = 'statement';
         this.block = statements();
         this.disrupt = this.block.disrupt;
