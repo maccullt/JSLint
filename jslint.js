@@ -4333,7 +4333,6 @@ klass:              do {
     });
 
     labeled_stmt('for', function () {
-		debugger;
         var blok, filter, ok = false, paren = next_token, value;
         this.arity = 'statement';
         funct['(breakage)'] += 1;
