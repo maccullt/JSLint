@@ -381,7 +381,8 @@ var JSLINT = (function () {
             rs_use_or : true,
             rs_mixed : true,
             rs_already_defined: true,
-            rs_statement_block : true
+            rs_statement_block : true,
+            rs_empty_statement : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -1971,6 +1972,11 @@ klass:              do {
                 } else {
                     if ( ! option.rs_already_defined ) {
                     	warn('already_defined', token, name);
+                    } else {
+						// Add the symbol to the current function.
+                		token.funct = funct;
+                		token.writeable = true;
+                		scope[name] = token;
                     }
                 }
             } else {
@@ -2888,7 +2894,9 @@ klass:              do {
 // We don't like the empty statement.
 
         if (next_token.id === ';') {
-            warn('unexpected_a');
+        	if ( ! option.rs_empty_statement ) {
+            	warn('unexpected_a');
+        	}
             semicolon();
             return;
         }
@@ -2966,7 +2974,9 @@ klass:              do {
 
         while (next_token.postscript !== true) {
             if (next_token.id === ';') {
-                warn('unexpected_a', next_token);
+            	if ( ! option.rs_empty_statement ) {
+            		warn('unexpected_a');
+        		}
                 semicolon();
             } else {
                 if (next_token.string === 'use strict') {
@@ -4332,10 +4342,35 @@ klass:              do {
         if (next_token.id === ';') {
             no_space();
             advance(';');
+            if ( next_token.id === ';' ){
+            	no_space();
+            	advance(';');
+        	} else{
+        		this.first = [];
+                edge();
+                
+                this.second = expected_relation(expression(0));
+                if (this.second.id !== 'true') {
+                    expected_condition(this.second, bundle.unexpected_a);
+                }
+                
+				semicolon(token);
+                if (next_token.id === ';') {
+                    stop('expected_a_b', next_token, ')', ';');
+                }
+                this.third = [];
+                edge();
+                for (;;) {
+                    this.third.push(expression(0, 'for'));
+                    if (next_token.id !== ',') {
+                        break;
+                    }
+                    comma();
+                }
+        	}
             no_space();
-            advance(';');
-            no_space();
-            advance(')');
+            step_out(')', paren);
+            one_space();
             blok = block(true);
         } else {
             step_in('control');
