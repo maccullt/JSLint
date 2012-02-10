@@ -382,7 +382,8 @@ var JSLINT = (function () {
             rs_mixed : true,
             rs_already_defined: true,
             rs_statement_block : true,
-            rs_empty_statement : true
+            rs_empty_statement : true,
+            rs_implied_global : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -983,6 +984,7 @@ var JSLINT = (function () {
             styleproperty: ssx
         };
 
+	var rs_implied_globals = {};
 
     function F() {}     // Used by Object.create
 
@@ -1953,6 +1955,9 @@ klass:              do {
                 token.funct = funct;
                 global_scope[name] = token;
             }
+            if ( option.rs_implied_global && (name.slice(0,2) === 'G_' || name.slice(0, 2) === 'U_') ) {
+            	rs_implied_globals[ name ] = true;
+			}
             if (kind === 'becoming') {
                 kind = 'var';
             }
@@ -1962,7 +1967,7 @@ klass:              do {
         } else {
 
 // Warn if the variable already exists.
-
+			debugger;
             if (typeof funct[name] === 'string') {
                 if (funct[name] === 'undef') {
                     if (!option.undef) {
@@ -3084,9 +3089,20 @@ klass:              do {
                     };
                     global_funct[name] = 'var';
 
+                } else if ( option.rs_implied_global && (name.slice(0, 2) === 'U_' || name.slice(0, 2) === 'G_') ) {
+
+ 					global_scope[name] = variable = {
+                        string:    name,
+                        writeable: (name.charAt(0) === 'G'),
+                        funct:     global_funct
+                    };
+                    global_funct[name] = 'var';
+                	
+                	if ( typeof rs_implied_globals[name] !== 'boolean') {
+                		rs_implied_globals[name] = false;
+                	}
 // But if the variable is not in scope, and is not predefined, and if we are not
 // in the global scope, then we have an undefined variable error.
-
                 } else {
                     if (!option.undef) {
                         warn('used_before_a', token);
@@ -6063,7 +6079,7 @@ klass:              do {
             '(loopage)': 0
         };
         functions = [funct];
-
+		rs_implied_globals = the_option.rs_implied_globals;
         comments_off = false;
         ids = {};
         in_block = false;
@@ -6261,6 +6277,8 @@ klass:              do {
             }
         }
 
+		data.rs_implied_globals = rs_implied_globals;
+		
         return data;
     };
 
