@@ -383,7 +383,8 @@ var JSLINT = (function () {
             rs_already_defined: true,
             rs_statement_block : true,
             rs_empty_statement : true,
-            rs_implied_global : true
+            rs_implied_global : true,
+            rs_case_without_break: true 
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -1955,7 +1956,7 @@ klass:              do {
                 token.funct = funct;
                 global_scope[name] = token;
             }
-            if ( option.rs_implied_global && (name.slice(0,2) === 'G_' || name.slice(0, 2) === 'U_') ) {
+            if ( option.rs_implied_global && name.match(/^[CDFGU]_.*$/) ) {
             	rs_implied_globals[ name ] = true;
 			}
             if (kind === 'becoming') {
@@ -3078,7 +3079,7 @@ klass:              do {
 // If the variable is not in scope, then we may have an undeclared variable.
 // Check the predefined list. If it was predefined, create the global
 // variable.
-
+			debugger;
             if (typeof variable !== 'object') {
                 writeable = predefined[name];
                 if (typeof writeable === 'boolean') {
@@ -3089,7 +3090,7 @@ klass:              do {
                     };
                     global_funct[name] = 'var';
 
-                } else if ( option.rs_implied_global && (name.slice(0, 2) === 'U_' || name.slice(0, 2) === 'G_') ) {
+                } else if ( option.rs_implied_global && name.match(/^[CDFGU]_.*$/)) {
 
  					global_scope[name] = variable = {
                         string:    name,
@@ -4279,7 +4280,7 @@ klass:              do {
                     if (particular.id === 'break') {
                         unbroken = false;
                     }
-                } else {
+                } else if ( ! option.rs_case_without_break ) {
                     warn('missing_a_after_b', next_token, 'break', 'case');
                 }
             } else {
