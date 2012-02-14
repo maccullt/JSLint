@@ -1968,7 +1968,6 @@ klass:              do {
         } else {
 
 // Warn if the variable already exists.
-			debugger;
             if (typeof funct[name] === 'string') {
                 if (funct[name] === 'undef') {
                     if (!option.undef) {
@@ -1983,6 +1982,7 @@ klass:              do {
                 		token.funct = funct;
                 		token.writeable = true;
                 		scope[name] = token;
+                		kind = 'var';
                     }
                 }
             } else {
@@ -4019,7 +4019,6 @@ klass:              do {
 // and assignment tokens.
 
         var assign, id, name;
-
         if (funct['(vars)'] && !option.vars) {
             warn('combine_var');
         } else if (funct !== global_funct) {
