@@ -384,7 +384,8 @@ var JSLINT = (function () {
             rs_statement_block : true,
             rs_empty_statement : true,
             rs_implied_global : true,
-            rs_case_without_break: true 
+            rs_case_without_break: true,
+            rs_radix: true 
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -3629,7 +3630,7 @@ klass:              do {
         no_space();
         step_out(')', that);
         if (typeof left === 'object') {
-            if (left.string === 'parseInt' && p.length === 1) {
+            if (left.string === 'parseInt' && p.length === 1 && ! option.rs_radix) {
                 warn('radix', left);
             }
             if (!option.evil) {
