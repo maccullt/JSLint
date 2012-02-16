@@ -1146,7 +1146,7 @@ var JSLINT = (function () {
         };
     }
 
-    function warn(message, offender, a, b, c, d) {
+    function warn(message, offender, a, b, c, d) {    	
         var character, line, warning;
         offender = offender || next_token;  // ~~
         line = offender.line || 0;
@@ -1957,7 +1957,7 @@ klass:              do {
                 token.funct = funct;
                 global_scope[name] = token;
             }
-            if ( option.rs_implied_global && name.match(/^[CDFGU]_.*$/) ) {
+            if ( option.rs_implied_global && (name.match(/^[CDFGU]_.*$/) || name.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/)) ) {
             	rs_implied_globals[ name ] = true;
 			}
             if (kind === 'becoming') {
@@ -3080,7 +3080,6 @@ klass:              do {
 // If the variable is not in scope, then we may have an undeclared variable.
 // Check the predefined list. If it was predefined, create the global
 // variable.
-			debugger;
             if (typeof variable !== 'object') {
                 writeable = predefined[name];
                 if (typeof writeable === 'boolean') {
@@ -3091,11 +3090,11 @@ klass:              do {
                     };
                     global_funct[name] = 'var';
 
-                } else if ( option.rs_implied_global && name.match(/^[CDFGU]_.*$/)) {
+                } else if ( option.rs_implied_global && (name.match(/^[CDFGU]_.*$/) || name.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/)) ) {
 
  					global_scope[name] = variable = {
                         string:    name,
-                        writeable: (name.charAt(0) === 'G'),
+                        writeable: true,
                         funct:     global_funct
                     };
                     global_funct[name] = 'var';
@@ -3595,8 +3594,10 @@ klass:              do {
         p = [];
         if (left.identifier) {
             if (left.string.match(/^[A-Z]([A-Z0-9_$]*[a-z][A-Za-z0-9_$]*)?$/)) {
-                if (left.string !== 'Number' && left.string !== 'String' &&
-                        left.string !== 'Boolean' && left.string !== 'Date') {
+            	if ( left.string !== 'Number' && left.string !== 'String' &&
+                        left.string !== 'Boolean' && left.string !== 'Date' &&
+                        ! left.string.match(/^[DFGU]_.$/) &&
+            	        ! left.string.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/) ) {
                     if (left.string === 'Math' || left.string === 'JSON') {
                         warn('not_a_function', left);
                     } else if (left.string === 'Object') {
