@@ -385,7 +385,8 @@ var JSLINT = (function () {
             rs_empty_statement : true,
             rs_implied_global : true,
             rs_case_without_break: true,
-            rs_radix: true 
+            rs_radix: true,
+            rs_empty_case: true 
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -3046,7 +3047,7 @@ klass:              do {
         funct['(verb)'] = null;
         scope = old_scope;
         in_block = old_in_block;
-        if (ordinary && array.length === 0) {
+        if (ordinary && array.length === 0 && ! option.rs_empty_block) {
             warn('empty_block');
         }
         return array;
@@ -3594,9 +3595,10 @@ klass:              do {
         p = [];
         if (left.identifier) {
             if (left.string.match(/^[A-Z]([A-Z0-9_$]*[a-z][A-Za-z0-9_$]*)?$/)) {
+            	debugger;
             	if ( left.string !== 'Number' && left.string !== 'String' &&
                         left.string !== 'Boolean' && left.string !== 'Date' &&
-                        ! left.string.match(/^[DFGU]_.$/) &&
+                        ! left.string.match(/^[DFGU]_[A-Z]\w+$/) &&
             	        ! left.string.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/) ) {
                     if (left.string === 'Math' || left.string === 'JSON') {
                         warn('not_a_function', left);
@@ -4284,7 +4286,7 @@ klass:              do {
                 } else if ( ! option.rs_case_without_break ) {
                     warn('missing_a_after_b', next_token, 'break', 'case');
                 }
-            } else {
+            } else if (! option.rs_empty_case ){
                 warn('empty_case');
             }
             this.second.push(the_case);
