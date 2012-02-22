@@ -3402,7 +3402,7 @@ klass:              do {
         return this;
     });
     infix('-', 130, function (left, that) {
-        if ((left.id === '(number)' && left.number === 0) || left.id === '(string)') {
+        if (left.id === '(string)') {
             warn('unexpected_a', left);
         }
         var right = expression(130);
