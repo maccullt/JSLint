@@ -387,7 +387,10 @@ var JSLINT = (function () {
             rs_case_without_break: true,
             rs_radix: true,
             rs_empty_case: true,
-            rs_no_statement_scope : true
+            rs_no_statement_scope : true,
+            rs_allow_spaces : true,
+            rs_allow_arguments_index : true,
+            rs_allow_func_wrap : true,
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -1548,7 +1551,7 @@ var JSLINT = (function () {
                         length += 1;
                         pos += 1;
                     }
-                    if (pos > 1) {
+                    if (pos > 1 && ! option.rs_allow_spaces) {
                         warn_at('use_braces', line, from + length, pos);
                     }
                     break;
@@ -3676,7 +3679,7 @@ klass:              do {
         if (value.id === 'function') {
             if (next_token.id === '(') {
                 warn('move_invocation');
-            } else {
+            } else if (!option.rs_allow_func_wrap ) {
                 warn('bad_wrap', this);
             }
         }
@@ -3754,7 +3757,7 @@ klass:              do {
         e = expression(0);
         switch (e.id) {
         case '(number)':
-            if (e.id === '(number)' && left.id === 'arguments') {
+            if (e.id === '(number)' && left.id === 'arguments' && ! option.rs_allow_arguments_index) {
                 warn('use_param', left);
             }
             break;
