@@ -386,7 +386,8 @@ var JSLINT = (function () {
             rs_implied_global : true,
             rs_case_without_break: true,
             rs_radix: true,
-            rs_empty_case: true 
+            rs_empty_case: true,
+            rs_no_statement_scope : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
@@ -3021,11 +3022,14 @@ klass:              do {
         var array,
             curly = next_token,
             old_in_block = in_block,
-            old_scope = scope,
+            nest_scope = !ordinary || !option.rs_no_statement_scope,
+            old_scope = nest_scope ? scope : null,
             old_strict_mode = strict_mode;
 
         in_block = ordinary;
-        scope = Object.create(scope);
+        if (nest_scope) {
+        	scope = Object.create(scope);
+        }
         spaces();
         if (next_token.id === '{') {
             advance('{');
@@ -3045,7 +3049,9 @@ klass:              do {
             array.disrupt = array[0].disrupt;
         }
         funct['(verb)'] = null;
-        scope = old_scope;
+        if (nest_scope) {
+        	scope = old_scope;
+        }
         in_block = old_in_block;
         if (ordinary && array.length === 0 && ! option.rs_empty_block) {
             warn('empty_block');
@@ -3595,7 +3601,6 @@ klass:              do {
         p = [];
         if (left.identifier) {
             if (left.string.match(/^[A-Z]([A-Z0-9_$]*[a-z][A-Za-z0-9_$]*)?$/)) {
-            	debugger;
             	if ( left.string !== 'Number' && left.string !== 'String' &&
                         left.string !== 'Boolean' && left.string !== 'Date' &&
                         ! left.string.match(/^[DFGU]_[A-Z]\w+$/) &&
