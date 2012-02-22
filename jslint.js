@@ -4568,7 +4568,7 @@ klass:              do {
             if (next_token.id === '/' || next_token.id === '(regexp)') {
                 warn('wrap_regexp');
             }
-            this.first = expression(20);
+            this.first = expression(19);
         }
         return this;
     });
