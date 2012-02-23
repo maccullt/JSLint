@@ -390,7 +390,7 @@ var JSLINT = (function () {
             rs_no_statement_scope : true,
             rs_allow_spaces : true,
             rs_allow_arguments_index : true,
-            rs_allow_func_wrap : true,
+            rs_allow_func_wrap : true
         },
         anonname,       // The guessed name for anonymous functions.
         approved,       // ADsafe approved urls.
