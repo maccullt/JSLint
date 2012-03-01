@@ -1941,7 +1941,12 @@ klass:              do {
         };
     }());
 
-
+	function name_matches_rs_global( name ) {
+		return name.match(/^[CDFGU]_.*$/) || 
+			name.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/) ||
+			name.match(/^[A-Z]\w*_on(MouseDown|MouseOver|MouseOut|MouseUp|LoseCapture)$/);			
+	}
+	
     function add_label(token, kind, name) {
 
 // Define the symbol in the current function in the current scope.
@@ -1962,7 +1967,7 @@ klass:              do {
                 token.funct = funct;
                 global_scope[name] = token;
             }
-            if ( option.rs_implied_global && (name.match(/^[CDFGU]_.*$/) || name.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/)) ) {
+            if ( option.rs_implied_global && name_matches_rs_global(name) ) {
             	rs_implied_globals[ name ] = true;
 			}
             if (kind === 'becoming') {
@@ -3100,7 +3105,7 @@ klass:              do {
                     };
                     global_funct[name] = 'var';
 
-                } else if ( option.rs_implied_global && (name.match(/^[CDFGU]_.*$/) || name.match(/^[A-Z]\w*_FireOn[A-Z]\w*$/)) ) {
+                } else if ( option.rs_implied_global && name_matches_rs_global(name) ) {
 
  					global_scope[name] = variable = {
                         string:    name,
